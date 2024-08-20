@@ -1,0 +1,13 @@
+model/
+data/
+Logs/
+.DS_Store
+.idea/
+.venv/*
+__pycache__/
+
+.cache
+
+.env
+
+config.ini
