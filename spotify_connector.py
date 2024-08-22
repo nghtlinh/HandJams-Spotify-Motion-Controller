@@ -1,5 +1,5 @@
 import requests
-from spotify.oauth2 import SpotifyOAuth
+from spotipy.oauth2 import SpotifyOAuth
 
 from constants import SCOPE
 
@@ -9,7 +9,7 @@ class spotify_api:
     def __init__(self, client_id: str = "", 
                 client_secret: str = "", 
                 token: str = "", 
-                redirect_uri: str = "http://localhost:9000") -> None:
+                redirect_uri: str = "http://localhost:8888/spotify-api/callback/") -> None:
         """
         Initializes the Spotify connector.
 
