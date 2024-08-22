@@ -87,11 +87,11 @@ class Ui_DetectionWindow(object):
         self.pushButton_2.setText(_translate("DetectionWindow", "START"))
 
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    DetectionWindow = QtWidgets.QDialog()
-    ui = Ui_DetectionWindow()
-    ui.setupUi(DetectionWindow)
-    DetectionWindow.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     import sys
+#     app = QtWidgets.QApplication(sys.argv)
+#     DetectionWindow = QtWidgets.QDialog()
+#     ui = Ui_DetectionWindow()
+#     ui.setupUi(DetectionWindow)
+#     DetectionWindow.show()
+#     sys.exit(app.exec_())

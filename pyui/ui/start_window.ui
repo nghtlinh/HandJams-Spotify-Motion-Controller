@@ -41,7 +41,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget #main_layout{
-	background-image: url(:/background/bgc.png);
+	background-image: url(:/bgc.png);
 	background-repeat: no-repeat;
 	background-position: bottom;
     background-color: #2a292e;

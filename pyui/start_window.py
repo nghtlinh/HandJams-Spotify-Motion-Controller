@@ -24,7 +24,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowOpacity(1.0)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("QWidget #main_layout{\n"
-"    background-image: url(:/background/bgc.png);\n"
+"    background-image: url(:/bgc.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: bottom;\n"
 "    background-color: #2a292e;\n"

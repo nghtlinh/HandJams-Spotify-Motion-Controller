@@ -4,7 +4,7 @@ from typing import Any
 from PyQt5.QtWidgets import QMainWindow
 from gui.auth_window import auth_window
 from gui.detection_window import detection_window
-from spotify_connector import spotify_api
+from core.spotify_api import spotify_api
 from pyui.start_window import Ui_MainWindow
 
 
@@ -32,7 +32,7 @@ class main_window(QMainWindow, Ui_MainWindow):
         
     def _on_start_button_clicked(self) -> None:
         """Handle the start button click event. Launch detection if logged in, otherwise prompt for login."""
-        if self._login_in():
+        if self._log_in():
             self.detection_window.show()
         else:
             self._on_auth_button_clicked()
@@ -46,12 +46,12 @@ class main_window(QMainWindow, Ui_MainWindow):
         client_id, client_secret = self._read_config()
         
         if len(client_id) > 0 and len(client_secret) > 0:
-            spotify_api = spotify_api(client_id=client_id,
+            spotify_instance = spotify_api(client_id=client_id,
                                       client_secret=client_secret)
-            if spotify_api.get_token():
-                self.save_token(spotify_api.token)
-                self.login = spotify_api.token
-                self.detection_window.token = spotify_api.token
+            if spotify_instance.get_token():
+                self.save_token(spotify_instance.token)
+                self.login = spotify_instance.token
+                self.detection_window.token = spotify_instance.token
             return True
         return False
     

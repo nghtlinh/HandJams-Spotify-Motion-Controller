@@ -1,7 +1,7 @@
 import requests
 from spotipy.oauth2 import SpotifyOAuth
 
-from constants import SCOPE
+from util.constants import SCOPE
 
 class spotify_api:
     """Class represents connection with Spotify API
@@ -213,3 +213,24 @@ class spotify_api:
         except Exception as e:
             print(f"Error removing track: {e}")
             print("Please ensure Spotify is open and music is playing.")
+            
+    def gesture_action(self, gesture: str) -> None:
+        """Function makes action based on gesture name from input_gesture queue.
+
+        Args:
+            gesture (str): name of detected gesture
+        """
+        # Mapping gestures to their corresponding methods
+        gesture_actions = {
+            "next": self.skip_to_next,
+            "prev": self.skip_to_previous,
+            "love": self.fav_track,
+            "louder": self.volume_up,
+            "quieter": self.volume_down,
+            "play_pause": self.change_playing_status,
+        }
+        
+        # Retrieve and call the corresponding method if it exists
+        action = gesture_actions.get(gesture)
+        if action:
+            action()

@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog
-from spotify_connector import spotify_api
+from core.spotify_api import spotify_api
 from pyui.auth_window import Ui_AuthorizationWindow
 
 class auth_window(QDialog, Ui_AuthorizationWindow):
@@ -62,6 +62,10 @@ class auth_window(QDialog, Ui_AuthorizationWindow):
         """
         config = ConfigParser()
         config.read('config.ini')
+        
+        if not config.has_section('CLIENT'):
+            config.add_section('CLIENT')
+        
         config.set('CLIENT', 'client_id', client_id)
         config.set('CLIENT', 'client_secret', client_secret)
         config.set('CLIENT', 'token', token)

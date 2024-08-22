@@ -4,8 +4,8 @@ from threading import Thread
 from PyQt5.QtCore import pyqtSignal, QThread
 from PyQt5.QtGui import QImage
 
-from gesture_recognition import gesture_recognition
-from spotify_connector import spotify_api
+from core.gesture_recognition import gesture_recognition
+from core.spotify_api import spotify_api
 
 class gesture_spotify_connection(QThread):
     """ Class that integrates gesture recognition with Spotify controls.

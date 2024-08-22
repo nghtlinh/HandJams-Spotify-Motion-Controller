@@ -4,20 +4,21 @@ from typing import Type
 import cv2
 import mediapipe as mp
 import numpy as np
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QThread, QObject
 from PyQt5.QtGui import QImage
 from keras.models import load_model
 from mediapipe.python.solutions.holistic import Holistic
+from core.spotify_api import spotify_api
 
-from constants import ACTIONS, THRESHOLD
+from util.constants import ACTIONS, THRESHOLD
 
-class gesture_recognition:
+class gesture_recognition(QThread):
     """ Class for recognizing gestures from camera images using a pre-trained MediaPipe Holistic
     model.
     """
     change_image = pyqtSignal(QImage)
     
-    def __init__(self, model_name: str) -> None:
+    def __init__(self, model_name: str="model/gesture_recognition_model.h5") -> None:
         """HandDetectionModel constructor to set up the camera and MediaPipe components
         Arg:
             model_name(str)": file name to load the model"""
@@ -25,9 +26,12 @@ class gesture_recognition:
         self.mp_drawing = mp.solutions.drawing_utils
         self.cap = cv2.VideoCapture(0)
         self.model_name = model_name
+        self.token = ""
         
-        self.gesture = None
-        self.confidence = None
+    change_gesture_name = pyqtSignal(str)
+    change_confidence = pyqtSignal(str)        
+    change_image = pyqtSignal(QImage)
+    add_gesture = pyqtSignal(str)
         
     def generate_hand_prediction(self, frame: np.ndarray, model: Holistic) -> Type:
         """Function generate prediction based on holistic model
@@ -93,6 +97,7 @@ class gesture_recognition:
             
         return np.concatenate([left_hand_points, right_handpoints])
     
+    
     def convert_image(self, image: np.ndarray) -> QImage:
         """Function convers np.ndarray from camera to an QImage object to display it.
         """
@@ -102,6 +107,7 @@ class gesture_recognition:
         scaled_image = converted_image.scaled(600, 600, Qt.KeepAspectRatio)
         return scaled_image
     
+    
     def detect_gestures(self, output_gesture: Queue[str], change_image) -> None:
         """Function detects gestures based on image from camera and adds detected gesture's name to the queue
 
@@ -110,8 +116,8 @@ class gesture_recognition:
             change_image (_type_): pass
         """
         landmarks_from_frame = []
-        
         model = load_model(self.model_name)
+        spotify = spotify_api(token=self.token)
         
         # Set up MediaPipe Holistic Model for hand tracking and pose detection
         with self.mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
@@ -128,7 +134,7 @@ class gesture_recognition:
                 
                 # Draw hands landmarks and update the displayed image with processed frame
                 self.draw_hand_landmarks(frame, results)
-                change_image.emit(self.convert_image(frame))
+                self.change_image.emit(self.convert_image(frame))
                 
                 # Save landmarks and add them to landmark list
                 landmarks = self.save_hand_landmarks(results)
@@ -144,13 +150,13 @@ class gesture_recognition:
                     max_prediction_index = np.argmax(prediction)
                     
                     if prediction[max_prediction_index] > THRESHOLD:
-                        self.confidence = prediction[max_prediction_index]
-                        self.gesture = ACTIONS[max_prediction_index]
-                        gesture_info = {
-                            "gesture": self.gesture,
-                            "confidence": str(round(self.confidence*100, 2))
-                        }
+                        confidence = prediction[max_prediction_index]
+                        gesture = ACTIONS[max_prediction_index]
+                        spotify.gesture_action(gesture)
+
+                        self.change_gesture_name.emit(gesture)
                         output_gesture.put(gesture_info)
+                        self.change_confidence.emit(str(round(confidence * 100, 2)))
                         landmarks_from_frame = []
                         
                     cv2.waitKey(10)
@@ -160,3 +166,6 @@ class gesture_recognition:
                 
             self.cap.release()
             cv2.destroyAllWindows()
+            
+    def run(self):
+        self.detect_gestures()
